@@ -1,0 +1,31 @@
+services:
+    db:
+       image: postgres
+       environment:
+          - POSTGRES_PASSWORD=app_password
+          - POSTGRES_USER=app_user
+          - POSTGRES_DB=app
+       volumes:
+          - db_data:/var/lib/postgresql
+       networks:
+          - app_network
+          
+    app:
+        build: .
+        container_name: flask_app
+        ports:
+            - 5000:5000
+        env_file:
+            - .env
+        command: sh -c "flask db upgrade && flask run --host=0.0.0.0"
+        networks:
+            - app_network
+        depends_on:
+            - db
+        restart: on-failure
+networks:
+   app_network:
+     driver: bridge
+        
+volumes:
+  db_data:
