@@ -9,6 +9,15 @@ services:
           - db_data:/var/lib/postgresql
        networks:
           - app_network
+
+    redis:
+      image: redis:6.2-alpine
+      volumes:
+        - redis_data:/data
+      networks:
+        - app_network
+      depends_on:
+        - db
           
     app:
         build: .
@@ -28,3 +37,4 @@ networks:
         
 volumes:
   db_data:
+  redis_data:
