@@ -2,7 +2,6 @@
 .git/
 .github/
 .vscode/
-azureproject/
 infra/
 .git*
 azure.yml
