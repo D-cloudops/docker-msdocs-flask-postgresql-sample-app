@@ -14,5 +14,7 @@ jobs:
         - name: BUilding Image
           run: docker compose up -d
         - name: smoke test
-          run: curl -s -o /dev/null -w "%{http_code}" localhost:5000
+          run: |
+            sleep 5
+            curl -Iv localhost:5000
 
