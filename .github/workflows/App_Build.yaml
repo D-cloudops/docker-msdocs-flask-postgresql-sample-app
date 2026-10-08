@@ -1,0 +1,18 @@
+name: App_Build
+
+on: 
+    push:
+     branches:
+        - main
+
+jobs:
+    Deploying_App:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Code Checkout
+          uses: actions/checkout@v7
+        - name: BUilding Image
+          run: docker compose up -d
+        - name: smoke test
+          run: curl -s -o /dev/null -w "%{http_code}" localhost:5000
+
