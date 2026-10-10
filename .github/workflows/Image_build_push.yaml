@@ -1,0 +1,29 @@
+name: Docker Image push
+on:
+    push:
+        branches:
+            - multi-stage
+
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v7
+        - name: docker_login
+          uses: docker/login-action@v4
+          with:
+            username: ${{ vars.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+        - name: build_push_image
+          uses: docker/build-push-action@v7
+          with:
+            context: .
+            push: true
+            tags: danishreg/flaskapp:v1
+        - name: deploying_app
+          run: docker compose up -d
+        - name: smoke test
+          run: |
+            sleep 5
+            curl -Iv localhost:5000
