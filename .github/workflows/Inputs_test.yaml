@@ -1,0 +1,51 @@
+name: Input Test
+
+on:
+    workflow_dispatch:
+        inputs: 
+           environment:
+              required: true
+              type: choice
+              default: dev
+              options:
+              - dev
+              - qa
+              - prod
+           perform_smoke_test:
+             required: true
+             type: boolean
+             default: true
+
+
+jobs:
+    Input_test:
+        runs-on: Ubuntu:latest
+        steps:
+        - name: checking_out_code
+          uses: actions/checkout@v7
+        - name: Generate Image Tag
+          run: |
+            echo "image_tag=danishreg/flaskapp:${{ inputs.environment }}-${{ github.run_id  }}" >> $GITHUB_ENV
+        - name: docker login
+          uses: docker/login-action@v4
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+        - name: Build_Image
+          uses: docker/build-push-action@v7
+          with:
+            push: false
+            tags: $image_Tag
+        - name: pushing_image
+          if: ${{ inputs.environment == 'prod' }}
+          run:
+            docker push $image_tag
+        - name: Running_security_test
+          if: ${{ inputs.environment == 'prod' }}
+          run: |
+            echo "Running test on Env: ${{ inputs.environment }}"
+        - name: smoke_test
+          if: ${{ inputs.perform_smoke_test }}
+          run: |
+            sleep 5
+            curl -sI http://localhost:5000 | grep ^HTTP | awk '{print $2}'
