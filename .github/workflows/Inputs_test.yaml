@@ -19,7 +19,7 @@ on:
 
 jobs:
     Input_test:
-        runs-on: Ubuntu:latest
+        runs-on: ubuntu:latest
         steps:
         - name: checking_out_code
           uses: actions/checkout@v7
